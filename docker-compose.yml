@@ -2,12 +2,12 @@ services:
   postgresdb:
     image: postgres:15
     restart: unless-stopped
-    container_name: postgresdb
+    container_name: shipflow-postgres
 
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: dev
+      POSTGRES_DB: shipflow-ai
 
     ports:
       - "5432:5432"

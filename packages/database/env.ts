@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { z } from "zod";
 
 const envSchema = z.object({
@@ -6,7 +7,11 @@ const envSchema = z.object({
 
 function createEnv(env: NodeJS.ProcessEnv) {
   const safeParseResult = envSchema.safeParse(env);
-  if (!safeParseResult.success) throw new Error(safeParseResult.error.message);
+
+  if (!safeParseResult.success) {
+    throw new Error(safeParseResult.error.message);
+  }
+
   return safeParseResult.data;
 }
 

@@ -1,0 +1,17 @@
+{
+  "name": "@repo/auth",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./src/auth.ts",
+  "types": "./src/auth.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@repo/database": "workspace:*",
+    "better-auth": "latest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

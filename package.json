@@ -20,6 +20,8 @@
     "node": ">=18"
   },
   "dependencies": {
+    "better-auth": "^1.6.20",
+    "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0"
   }
 }
