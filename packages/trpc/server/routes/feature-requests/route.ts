@@ -1,25 +1,47 @@
-// 🛠️ FIX 1: Point to your actual tRPC initialization file based on your folder structure
 import { router, protectedProcedure } from "../../trpc";
 import { z } from "zod";
 
-// 🛠️ FIX 2: Use your clean monorepo workspace aliases instead of messy ../../ paths!
 import { db } from "../../../../database";
-import { featureRequest } from "../../../../database/schema";
+import { featureRequest, workspace } from "../../../../database/schema";
 import { inngest } from "@repo/services/ai/chatbot/client";
 
 export const featureRequestRouter = router({
   create: protectedProcedure
     .input(z.object({
-      workspaceId: z.string(),
+      workspaceId: z.string().uuid().optional(),
       title: z.string(),
       prompt: z.string(),
     }))
     .mutation(async ({ input, ctx }) => {
+      let workspaceId = input.workspaceId;
+
+      if (!workspaceId) {
+        const [existingWorkspace] = await db.select().from(workspace).limit(1);
+
+        if (existingWorkspace) {
+          workspaceId = existingWorkspace.id;
+        } else {
+          const [createdWorkspace] = await db
+            .insert(workspace)
+            .values({
+              name: "Default Workspace",
+              slug: "default",
+            })
+            .returning();
+
+          if (!createdWorkspace) {
+            throw new Error("Failed to create default workspace.");
+          }
+
+          workspaceId = createdWorkspace.id;
+        }
+      }
+
       // 1. Save to Database
       const result = await db.insert(featureRequest).values({
-        workspaceId: input.workspaceId,
+        workspaceId,
         // Ensure your context actually provides the user ID like this!
-        userId: ctx.user.id, 
+        userId: ctx.user.id,
         title: input.title,
         initialPrompt: input.prompt,
       }).returning();
@@ -37,5 +59,7 @@ export const featureRequestRouter = router({
       });
 
       return newRequest;
+    }),
+});
     }),
 });

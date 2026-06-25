@@ -2,8 +2,6 @@ import { inngest } from "./client"; // Your Inngest client
 import { db } from "@repo/database";
 import { featureRequest, featureClarificationMessage } from "@repo/database/schema";
 import { eq } from "drizzle-orm";
-import { generateText, generateObject } from "ai"; // Vercel AI SDK
-import { OpenRouter } from '@openrouter/sdk'; // Or anthropic, etc.
 
 export const processFeatureRequest = inngest.createFunction(
   {
@@ -32,23 +30,22 @@ export const processFeatureRequest = inngest.createFunction(
       return result;
     });
 
-    // 2️⃣ Ask the AI: "Does this make sense or do we need more info?"
+    // 2️⃣ Decide whether this request has enough detail to continue.
+    // This keeps the workflow runnable even before an AI provider is configured.
     const aiAnalysis = await step.run("analyze-request", async () => {
-      const prompt = `
-        A user submitted this feature request: "${request.initialPrompt}"
-        Does this request have enough detail to write a full PRD (Goals, Acceptance Criteria, Edge Cases)?
-        Reply with exactly "YES" if it is ready, or reply with a single follow-up question asking the user for the missing context.
-      `;
+      const prompt = request.initialPrompt.trim();
+      const needsMoreInfo = prompt.length < 80;
 
-      const { text } = await generateText({
-        model: '~openai/gpt-latest', // Make sure your OPENAI_API_KEY is in your .env!
-        prompt: prompt,
-      });
-
-      return {
-        needsMoreInfo: text.trim() !== "YES",
-        response: text.trim(),
-      };
+      return needsMoreInfo
+        ? {
+            needsMoreInfo,
+            response:
+              "Can you add more detail about the user goal, expected behavior, and any edge cases?",
+          }
+        : {
+            needsMoreInfo,
+            response: "YES",
+          };
     });
 
     // 3️⃣ If the AI needs more info, PAUSE the workflow! ⏸️

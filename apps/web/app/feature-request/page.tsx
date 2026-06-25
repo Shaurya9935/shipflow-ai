@@ -1,15 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
 import { trpc } from "~/trpc/client"
-// Import your tRPC client (adjust this path to match your actual trpc client setup in apps/web)
-// import { trpc } from "@/utils/trpc"; 
+
 
 export default function FeatureRequestsPage() {
-  const params = useParams();
-  const workspaceSlug = params.workspaceSlug as string;
-  
   const [title, setTitle] = useState("");
   const [prompt, setPrompt] = useState("");
 
@@ -24,10 +19,9 @@ export default function FeatureRequestsPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // 2. UNCOMMENT THIS: Actually trigger the backend! 🚀
     createRequest.mutate({
-      workspaceId: workspaceSlug, // Make sure your DB has a workspace that matches this slug!
       title: title,
       prompt: prompt,
     });
@@ -66,9 +60,9 @@ export default function FeatureRequestsPage() {
         <button
           type="submit"
           className="w-full bg-blue-600 text-white font-medium py-2 px-4 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-          disabled={createRequest.isLoading}
+          disabled={createRequest.isPending}
         >
-          {createRequest.isLoading ? "Submitting to AI..." : "Submit to AI Agent ✨"}
+          {createRequest.isPending ? "Submitting to AI..." : "Submit to AI Agent ✨"}
         </button>
       </form>
     </div>
