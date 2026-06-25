@@ -1,4 +1,5 @@
 CREATE TYPE "public"."field_type" AS ENUM('admin', 'member');--> statement-breakpoint
+CREATE TYPE "public"."feature_request_status" AS ENUM('pending', 'needs_clarification', 'rejected', 'prd_generated', 'planning', 'development', 'in_review', 'completed');--> statement-breakpoint
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"account_id" text NOT NULL,
@@ -63,10 +64,33 @@ CREATE TABLE "workspace_member" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "feature_clarification_message" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"feature_request_id" uuid NOT NULL,
+	"role" text NOT NULL,
+	"content" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "feature_request" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"workspace_id" uuid NOT NULL,
+	"user_id" text NOT NULL,
+	"title" text NOT NULL,
+	"initial_prompt" text NOT NULL,
+	"status" "feature_request_status" DEFAULT 'pending' NOT NULL,
+	"prd_content" jsonb,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
+--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "workspace_member" ADD CONSTRAINT "workspace_member_workspace_id_workspaces_id_fk" FOREIGN KEY ("workspace_id") REFERENCES "public"."workspaces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "workspace_member" ADD CONSTRAINT "workspace_member_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "feature_clarification_message" ADD CONSTRAINT "feature_clarification_message_feature_request_id_feature_request_id_fk" FOREIGN KEY ("feature_request_id") REFERENCES "public"."feature_request"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "feature_request" ADD CONSTRAINT "feature_request_workspace_id_workspaces_id_fk" FOREIGN KEY ("workspace_id") REFERENCES "public"."workspaces"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "feature_request" ADD CONSTRAINT "feature_request_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "account" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "session" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");
