@@ -18,11 +18,15 @@ const queryClient = new QueryClient({
 });
 
 export const GlobalProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  // 1. Explicitly define the batch client logic
   const [trpcClient] = useState(() =>
     trpc.createClient({
-      links: [createTRPCHttpBatchClientClient()],
+      links: [
+        createTRPCHttpBatchClientClient({ enableStreaming: true })
+      ],
     }),
   );
+
   return (
     <QueryClientProvider client={queryClient}>
       <NextThemesProvider
@@ -31,7 +35,7 @@ export const GlobalProviders: React.FC<{ children: React.ReactNode }> = ({ child
         enableSystem
         disableTransitionOnChange
       >
-        <trpc.Provider queryClient={queryClient} client={trpcClient}>
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
           {children}
           <Toaster />
         </trpc.Provider>

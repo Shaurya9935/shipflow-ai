@@ -20,9 +20,12 @@
     "node": ">=18"
   },
   "dependencies": {
+    "@openrouter/sdk": "^0.13.14",
+    "ai": "^6.0.209",
     "better-auth": "^1.6.20",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
+    "drizzle-orm": "^0.45.1",
     "inngest": "^4.11.0"
   }
 }
