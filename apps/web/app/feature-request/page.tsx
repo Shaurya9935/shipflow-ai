@@ -27,7 +27,7 @@ export default async function FeatureRequestsPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
+        <SiteHeader title="Feature Requests" />
         <FeatureRequestView />
       </SidebarInset>
     </SidebarProvider>

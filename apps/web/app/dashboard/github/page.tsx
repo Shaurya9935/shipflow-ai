@@ -30,7 +30,7 @@ export default async function DashboardGithubPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
+        <SiteHeader title="GitHub App" />
     <div className="flex flex-col flex-1 overflow-y-auto">
       <DashboardHeader
         title="GitHub App"

@@ -6,7 +6,7 @@ import { getInstallationStatus } from "@repo/services/github/installation"
 import Link from "next/link"
 import { Github } from "lucide-react"
 
-export async function SiteHeader() {
+export async function SiteHeader({ title = "Dashboard" }: { title?: string }) {
   const session = await getServerSession();
   const connected = session
     ? (await getInstallationStatus(session.user.id)).connected
@@ -23,7 +23,7 @@ export async function SiteHeader() {
           orientation="vertical"
           className="mx-2 data-[orientation=vertical]:h-4"
         />
-        <h1 className="text-base font-medium">Documents</h1>
+        <h1 className="text-base font-medium">{title}</h1>
         <div className="ml-auto flex items-center gap-2">
           {connected ? (
             <Button variant="ghost" asChild size="sm" className="hidden sm:flex text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-500/10">

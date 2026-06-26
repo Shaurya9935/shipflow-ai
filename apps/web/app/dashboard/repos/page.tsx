@@ -29,7 +29,7 @@ function ReposNotConnected() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
+        <SiteHeader title="Repositories" />
     <div className="flex flex-col items-center justify-center gap-4 py-20 px-6 max-w-md mx-auto text-center">
       <p className="text-sm text-muted-foreground leading-relaxed">
         To start monitoring repositories and receiving automated reviews, please install and connect the GitHub App to your account first.
@@ -60,12 +60,12 @@ export default async function DashboardReposPage() {
     >
       <AppSidebar variant="inset" />
       <SidebarInset>
-        <SiteHeader />
+        <SiteHeader title="Repositories" />
         <div className="flex flex-col flex-1 overflow-y-auto">
-          <DashboardHeader
+          {/* <DashboardHeader
             title="Repositories"
             description="All public and private repositories accessible to the GitHub App."
-          />
+          /> */}
           {installation.connected ? (
             <RepoList />
           ) : (
