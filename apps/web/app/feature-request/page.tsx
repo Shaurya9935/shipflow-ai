@@ -16,6 +16,12 @@ import {
   Compass,
   ArrowLeft,
 } from "lucide-react";
+import { AppSidebar } from "~/components/app-sidebar"
+import { SiteHeader } from "~/components/site-header"
+import {
+  SidebarInset,
+  SidebarProvider,
+} from "~/components/ui/sidebar"
 
 type PRDContent = {
   problemStatement?: string;
@@ -143,6 +149,17 @@ export default function FeatureRequestsPage() {
   const prdData = activeRequest?.prdContent as PRDContent | null;
 
   return (
+     <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar variant="inset" />
+      <SidebarInset>
+        <SiteHeader />
     <div className="flex h-screen bg-background text-foreground overflow-hidden font-sans">
       {/* 1. Left Side: Feature Request List Sidebar */}
       <div className="w-80 border-r border-border bg-sidebar text-sidebar-foreground flex flex-col shrink-0">
@@ -545,5 +562,7 @@ export default function FeatureRequestsPage() {
         </div>
       )}
     </div>
+     </SidebarInset>
+    </SidebarProvider>
   );
 }

@@ -20,7 +20,23 @@ const openApiDocument = generateOpenApiDocument(serverRouter, {
 
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: (origin, callback) => {
+        if (!origin) return callback(null, true);
+        
+        const allowedOrigins = [
+          "http://localhost:3000",
+          process.env.BETTER_AUTH_URL,
+          process.env.NEXT_PUBLIC_BETTER_AUTH_URL,
+        ].filter(Boolean) as string[];
+
+        const isAllowed = allowedOrigins.includes(origin) || origin.endsWith(".ngrok-free.dev");
+
+        if (isAllowed) {
+          callback(null, true);
+        } else {
+          callback(null, false);
+        }
+      },
       credentials: true,
     }),
   );

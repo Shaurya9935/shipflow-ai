@@ -27,7 +27,7 @@ export async function createContext(opts: { req: { headers: Headers | Record<str
   });
 
   // 2. Fallback user for development when session is not found
-  if (!session) {
+  if (!session && process.env.ALLOW_DEV_LOGIN === "true") {
     try {
       // Find or create a developer user in the database
       let [defaultUser] = await db.select().from(user).limit(1);

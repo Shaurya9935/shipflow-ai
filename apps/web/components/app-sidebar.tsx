@@ -32,6 +32,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar"
+import { authClient } from "~/lib/auth-client"
 
 const data = {
   user: {
@@ -51,8 +52,8 @@ const data = {
       icon: IconListDetails,
     },
     {
-      title: "Projects",
-      url: "#",
+      title: "Repositories",
+      url: "/dashboard/repos",
       icon: IconChartBar,
     },
     {
@@ -95,6 +96,15 @@ const data = {
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: sessionData } = authClient.useSession()
+  const sessionUser = sessionData?.user
+
+  const user = {
+    name: sessionUser?.name || "Developer",
+    email: sessionUser?.email || "dev@example.com",
+    avatar: sessionUser?.image || "",
+  }
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -106,7 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <IconInnerShadowTop className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">Vaskora</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -118,7 +128,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

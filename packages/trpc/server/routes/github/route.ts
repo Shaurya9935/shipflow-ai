@@ -2,7 +2,7 @@ import { router, protectedProcedure } from "../../trpc";
 import { db } from "@repo/database";
 import { githubInstallation } from "@repo/database/schema";
 import { eq } from "drizzle-orm";
-import { App } from "octokit";
+import type { App } from "octokit";
 
 export const githubRouter = router({
   getRepositories: protectedProcedure.query(async ({ ctx }) => {
@@ -17,7 +17,8 @@ export const githubRouter = router({
     }
 
     // 2. Initialize Octokit
-    const githubApp = new App({
+    const { App: AppClass } = await import("octokit");
+    const githubApp = new AppClass({
       appId: process.env.GITHUB_APP_ID!,
       privateKey: process.env.GITHUB_PRIVATE_KEY!.replace(/\\n/g, "\n"),
     });
@@ -45,5 +46,12 @@ export const githubRouter = router({
       console.error("Failed to fetch repos:", error);
       throw new Error("Failed to communicate with GitHub API");
     }
+  }),
+
+  disconnect: protectedProcedure.mutation(async ({ ctx }) => {
+    await db
+      .delete(githubInstallation)
+      .where(eq(githubInstallation.userId, ctx.user.id));
+    return { success: true };
   }),
 });

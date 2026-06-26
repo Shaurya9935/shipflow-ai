@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@repo/database";
 import { githubInstallation, user } from "@repo/database/schema";
 import { eq } from "drizzle-orm";
+import { getServerSession } from "~/lib/auth-actions";
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
@@ -15,12 +16,20 @@ export async function GET(req: NextRequest) {
   try {
     let finalUserId = stateUserId;
 
-    // If no user ID is provided in state, find the first user in the database or create a default dev user
+    // If no user ID is provided in state, try to get it from the active session
+    if (!finalUserId) {
+      const session = await getServerSession(false);
+      if (session) {
+        finalUserId = session.user.id;
+      }
+    }
+
+    // If still no user ID, find the first user in the database or create a default dev user if dev login is enabled
     if (!finalUserId) {
       const [existingUser] = await db.select().from(user).limit(1);
       if (existingUser) {
         finalUserId = existingUser.id;
-      } else {
+      } else if (process.env.ALLOW_DEV_LOGIN === "true") {
         const [createdUser] = await db
           .insert(user)
           .values({
@@ -35,6 +44,8 @@ export async function GET(req: NextRequest) {
           throw new Error("Failed to create default development user");
         }
         finalUserId = createdUser.id;
+      } else {
+        throw new Error("User session not found and developer auto-login is disabled");
       }
     }
 

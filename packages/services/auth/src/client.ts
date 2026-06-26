@@ -4,7 +4,7 @@ import type { auth } from "./index";
 
 export const authClient = createAuthClient({
   // Use environment variable for application domain mapping
-  baseURL: process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3000",
+  baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.NEXT_PUBLIC_AUTH_URL || "http://localhost:3000",
   plugins: [
     inferAdditionalFields<typeof auth>() // Keeps frontend types in sync with database models
   ]
